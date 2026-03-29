@@ -222,45 +222,6 @@ source /etc/environment
 # 도커 네트워크 생성
 docker network create common
 
-# npmplus 설치
-docker run -d \
-  --name npm_1 \
-  --restart unless-stopped \
-  --network common \
-  -p 80:80 \
-  -p 443:443 \
-  -p 443:443/udp \
-  -p 81:81 \
-  -e TZ=Asia/Seoul \
-  -e 'INITIAL_ADMIN_EMAIL=admin@npm.com' \
-  -e 'INITIAL_ADMIN_PASSWORD=${var.password_1}' \
-  -v /dockerProjects/npm_1/volumes/data:/data \
-  zoeyvid/npmplus:latest
-
-# redis 설치
-docker run -d \
-  --name=redis_1 \
-  --restart unless-stopped \
-  --network common \
-  -p 6379:6379 \
-  -e TZ=Asia/Seoul \
-  -v /dockerProjects/redis_1/volumes/data:/data \
-  redis --requirepass '${var.password_1}' --maxmemory 50mb --maxmemory-policy allkeys-lru
-
-# postgresql(pgj) 설치
-docker run -d \
-  --name pg_1 \
-  --restart unless-stopped \
-  -v /dockerProjects/pg_1/volumes/var/lib/postgresql:/var/lib/postgresql \
-  --network common \
-  -p 5432:5432 \
-  -e 'POSTGRES_USER=postgres' \
-  -e 'POSTGRES_PASSWORD=${var.password_1}' \
-  -e 'POSTGRES_DATABASE=postgres' \
-  -e 'POSTGRES_DATABASES=${var.app_1_db_name}' \
-  -e 'TZ=Asia/Seoul' \
-  pgvector/pgvector:pg17
-
 echo '${var.github_access_token_1}' | docker login ghcr.io -u '${var.github_access_token_1_owner}' --password-stdin
 
 echo "BOOTSTRAP DONE"
